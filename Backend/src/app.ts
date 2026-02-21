@@ -1,0 +1,38 @@
+import cors from "cors";
+import type { Application, NextFunction, Request, Response } from "express";
+import express from "express";
+import httpStatus from "http-status";
+import globalErrorHandler from "./app/middlewares/globalErrorHandler.js";
+
+const app: Application = express();
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+    credentials: true,
+  }),
+);
+
+//parser
+app.use(express.json());
+
+app.get("/", (req: Request, res: Response) => {
+  res.send({
+    Message: "Ph health care server..",
+  });
+});
+
+app.use(globalErrorHandler);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(httpStatus.NOT_FOUND).json({
+    success: false,
+    message: "API NOT FOUND!",
+    error: {
+      path: req.originalUrl,
+      message: "Your requested path is not found!",
+    },
+  });
+});
+
+export default app;

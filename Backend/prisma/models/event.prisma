@@ -1,0 +1,23 @@
+model Event {
+    id              String      @id @default(uuid())
+    title           String
+    type            String
+    description     String
+    location        String
+    image           String?
+    eventDate       DateTime
+    joiningFee      Float       @default(0)
+    minParticipants Int
+    maxParticipants Int
+    status          EventStatus @default(OPEN)
+
+    hostId String
+    host   Host   @relation(fields: [hostId], references: [id])
+
+    participants EventParticipant[]
+    reviews      Review[]
+    payments     Payment[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
