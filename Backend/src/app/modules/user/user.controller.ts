@@ -14,6 +14,27 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const registerUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createUser(req.body);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "User registered successfully",
+    data: result,
+  });
+});
+
+const registerHost = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createHost(req.body);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Host registered successfully",
+    data: result,
+  });
+});
 export const userController = {
   createAdmin,
+  registerUser,
+  registerHost,
 };
