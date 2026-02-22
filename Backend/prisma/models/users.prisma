@@ -2,13 +2,12 @@ model User {
     id                 String     @id @default(uuid())
     email              String     @unique
     password           String
-    role               UserRole
+    role               UserRole   @default(USER)
     status             UserStatus @default(ACTIVE)
     needPasswordChange Boolean    @default(true)
     createdAt          DateTime   @default(now())
     updatedAt          DateTime   @updatedAt
 
-    // In future, you can add other role tables
     host              Host?
     admin             Admin?
     payments          Payment[]
@@ -29,13 +28,11 @@ model Host {
     interests     String[]
 
     userId String @unique
-    // user   User   @relation(fields: [userId], references: [id])
     user   User   @relation(fields: [userId], references: [id])
 
     events           Event[]
     reviews          Review[]
-     paymentsReceived Payment[]
-   
+    paymentsReceived Payment[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -46,7 +43,6 @@ model Host {
 model Admin {
     id            String  @id @default(uuid())
     fullName      String
-    email         String  @unique
     profilePhoto  String?
     contactNumber String?
     isDeleted     Boolean @default(false)

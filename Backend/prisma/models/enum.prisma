@@ -22,3 +22,12 @@ enum PaymentStatus {
     PAID
     FAILED
 }
+
+enum EventType {
+    CONCERT
+    HIKE
+    DINNER
+    SPORTS
+    TECH_MEETUP
+    OTHER
+}

@@ -1,7 +1,7 @@
 model Event {
     id              String      @id @default(uuid())
     title           String
-    type            String
+    type            EventType
     description     String
     location        String
     image           String?
@@ -20,4 +20,8 @@ model Event {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([type])
+    @@index([location])
+    @@index([eventDate])
 }

@@ -3,6 +3,7 @@ import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import httpStatus from "http-status";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler.js";
+import router from "./app/routes/index.js";
 
 const app: Application = express();
 
@@ -21,6 +22,7 @@ app.get("/", (req: Request, res: Response) => {
     Message: "Ph health care server..",
   });
 });
+app.use("/api/v1", router);
 
 app.use(globalErrorHandler);
 
