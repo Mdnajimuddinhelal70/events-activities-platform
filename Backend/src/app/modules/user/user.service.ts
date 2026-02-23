@@ -1,12 +1,16 @@
 import bcrypt from "bcrypt";
+import { Request } from "express";
 import {
   Admin,
   Host,
   User,
   UserRole,
+  UserStatus,
 } from "../../../../generated/prisma/client";
 import config from "../../../config";
 import { prisma } from "../../../lib/prisma";
+import { SafeUser } from "../../../types/user";
+import { IAuthUser } from "../../interfaces/common";
 
 const createAdmin = async (payload: any): Promise<Admin> => {
   const hashedPassword: string = await bcrypt.hash(
@@ -85,8 +89,81 @@ const createHost = async (payload: any): Promise<Host> => {
   return hostUser;
 };
 
+const getAllFromDB = async (): Promise<SafeUser[]> => {
+  return prisma.user.findMany({
+    where: { role: UserRole.USER },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+};
+
+const changeProfileStatus = async (
+  userId: string,
+  status: "ACTIVE" | "INACTIVE" | "BANNED",
+) => {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { status },
+  });
+};
+
+const getMyProfile = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { profile: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
+
+const updateMyProfile = async (user: IAuthUser, req: Request) => {
+  const userInfo = await prisma.user.findFirstOrThrow({
+    where: {
+      email: user!.email,
+      status: UserStatus.ACTIVE,
+    },
+    include: {
+      admin: true,
+      host: true,
+    },
+  });
+
+  let profileInfo;
+
+  if (userInfo.role === UserRole.ADMIN) {
+    profileInfo = await prisma.admin.update({
+      where: { userId: userInfo.id },
+      data: req.body,
+    });
+  } else if (userInfo.role === UserRole.HOST) {
+    profileInfo = await prisma.host.update({
+      where: { userId: userInfo.id },
+      data: req.body,
+    });
+  } else if (userInfo.role === UserRole.USER) {
+    profileInfo = await prisma.user.update({
+      where: { id: userInfo.id },
+      data: req.body,
+    });
+  }
+
+  return profileInfo;
+};
 export const userService = {
   createAdmin,
   createUser,
   createHost,
+  getAllFromDB,
+  changeProfileStatus,
+  getMyProfile,
+  updateMyProfile,
 };
