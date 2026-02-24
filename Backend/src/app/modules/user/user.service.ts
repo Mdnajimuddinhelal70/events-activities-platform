@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request } from "express";
+import httpStatus from "http-status";
 import {
   Admin,
   Host,
@@ -10,6 +11,7 @@ import {
 import config from "../../../config";
 import { prisma } from "../../../lib/prisma";
 import { SafeUser } from "../../../types/user";
+import ApiError from "../../errors/ApiError";
 import { IAuthUser } from "../../interfaces/common";
 
 const createAdmin = async (payload: any): Promise<Admin> => {
@@ -116,12 +118,17 @@ const changeProfileStatus = async (
 const getMyProfile = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { profile: true },
+    include: {
+      profile: true,
+      host: true,
+      admin: true,
+    },
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
+
   return user;
 };
 
@@ -156,8 +163,9 @@ const updateMyProfile = async (user: IAuthUser, req: Request) => {
     });
   }
 
-  return profileInfo;
+  return { ...profileInfo };
 };
+
 export const userService = {
   createAdmin,
   createUser,

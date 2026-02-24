@@ -61,17 +61,29 @@ const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 // 3️⃣ Get My Profile
-const getMyProfile = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
-  const result = await userService.getMyProfile(userId);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Profile fetched successfully",
-    data: result,
-  });
-});
+const getMyProfile = catchAsync(
+  async (req: Request & { user?: any }, res: Response) => {
+    const user = req.user;
 
+    if (!user || !user.id) {
+      return sendResponse(res, {
+        statusCode: httpStatus.UNAUTHORIZED,
+        success: false,
+        message: "User not authenticated",
+        data: null,
+      });
+    }
+
+    const result = await userService.getMyProfile(user.id);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Profile fetched successfully",
+      data: result,
+    });
+  },
+);
 // 4️⃣ Update My Profile
 // const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
 //   const userId = req.user!.id;
