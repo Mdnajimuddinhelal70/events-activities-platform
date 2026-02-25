@@ -1,15 +1,15 @@
 model EventParticipant {
-    id String @id @default(uuid())
-
+    id      String                 @id @default(uuid())
     userId  String
     eventId String
+    status  EventParticipantStatus @default(JOINED)
 
-    user  User  @relation(fields: [userId], references: [id])
-    event Event @relation(fields: [eventId], references: [id])
-
+    user    User     @relation(fields: [userId], references: [id])
+    event   Event    @relation(fields: [eventId], references: [id])
     payment Payment?
 
     joinedAt DateTime @default(now())
 
     @@unique([userId, eventId])
+    @@map("event_participants")
 }

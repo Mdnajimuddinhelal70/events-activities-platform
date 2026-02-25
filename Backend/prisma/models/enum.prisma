@@ -31,3 +31,9 @@ enum EventType {
     TECH_MEETUP
     OTHER
 }
+
+enum EventParticipantStatus {
+    JOINED
+    CANCELLED
+    WAITING
+}

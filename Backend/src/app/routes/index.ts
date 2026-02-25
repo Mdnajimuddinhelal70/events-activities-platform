@@ -1,6 +1,7 @@
 import express from "express";
 import { apiLimiter } from "../middlewares/rateLimiter";
 import { AuthRoutes } from "../modules/auth/auth.route";
+import { eventRoute } from "../modules/event/event.route";
 import { UserRoute } from "../modules/user/user.route";
 
 const router = express.Router();
@@ -15,6 +16,10 @@ const moduleRoutes = [
   {
     path: "/auth",
     route: AuthRoutes,
+  },
+  {
+    path: "/events",
+    route: eventRoute,
   },
 ];
 
