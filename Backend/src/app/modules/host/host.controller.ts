@@ -20,11 +20,11 @@ const createEvent = catchAsync(
 
 const updateEvent = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
-    const hostId = req.user?.id;
+    const userId = req.user?.id;
     const { id } = req.params;
     const result = await HostService.updateEvent(
       id as string,
-      hostId,
+      userId,
       req.body,
     );
     sendResponse(res, {
@@ -38,9 +38,11 @@ const updateEvent = catchAsync(
 
 const deleteEvent = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
-    const hostId = req.user?.id;
+    const userId = req.user?.id;
     const { id } = req.params;
-    const result = await HostService.deleteEvent(id as string, hostId);
+
+    const result = await HostService.deleteEvent(id as string, userId);
+
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -52,12 +54,13 @@ const deleteEvent = catchAsync(
 
 const getMyEvents = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
-    const hostId = req.user?.id;
-    const result = await HostService.getMyEvents(hostId);
+    const userId = req.user?.id;
+    const result = await HostService.getMyEvents(userId);
+
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Events fetched successfully",
+      message: "My events retrieved successfully",
       data: result,
     });
   },
@@ -65,13 +68,15 @@ const getMyEvents = catchAsync(
 
 const getEventParticipants = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
-    const hostId = req.user?.id;
+    const userId = req.user?.id;
     const { id } = req.params;
-    const result = await HostService.getEventParticipants(id as string, hostId);
+
+    const result = await HostService.getEventParticipants(id as string, userId);
+
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Participants fetched successfully",
+      message: "Event participants retrieved successfully",
       data: result,
     });
   },

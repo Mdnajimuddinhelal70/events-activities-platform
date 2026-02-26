@@ -28,33 +28,104 @@ const createEvent = async (userId: string, data: any) => {
 };
 
 // Update Event
-const updateEvent = async (eventId: string, hostId: string, data: any) => {
-  return prisma.event.updateMany({
-    where: { id: eventId, hostId },
-    data,
+const updateEvent = async (eventId: string, userId: string, data: any) => {
+  // প্রথমে Host বের করো User এর সাথে লিঙ্ক করে
+  const host = await prisma.host.findUnique({
+    where: { userId },
+  });
+
+  if (!host) {
+    throw new Error("Host not found for this user");
+  }
+
+  // Event খুঁজে বের করো
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
+
+  if (!event || event.hostId !== host.id) {
+    throw new Error("Event not found or you are not authorized to update");
+  }
+
+  return prisma.event.update({
+    where: { id: eventId },
+    data: {
+      ...data,
+    },
   });
 };
 
 // Delete Event
-const deleteEvent = async (eventId: string, hostId: string) => {
-  return prisma.event.deleteMany({
-    where: { id: eventId, hostId },
+const deleteEvent = async (eventId: string, userId: string) => {
+  const host = await prisma.host.findUnique({
+    where: { userId },
+  });
+
+  if (!host) {
+    throw new Error("Host not found for this user");
+  }
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
+
+  if (!event || event.hostId !== host.id) {
+    throw new Error("Event not found or you are not authorized to delete");
+  }
+  return prisma.event.delete({
+    where: { id: eventId },
   });
 };
 
 // Get Host's Events
-const getMyEvents = async (hostId: string) => {
+const getMyEvents = async (userId: string) => {
+  const host = await prisma.host.findUnique({
+    where: { userId },
+  });
+
+  if (!host) {
+    throw new Error("Host not found for this user");
+  }
   return prisma.event.findMany({
-    where: { hostId },
-    include: { participants: true },
+    where: { hostId: host.id },
+    orderBy: { createdAt: "desc" },
   });
 };
 
 // Get Participants of an Event
-const getEventParticipants = async (eventId: string, hostId: string) => {
-  return prisma.event.findFirst({
-    where: { id: eventId, hostId },
-    include: { participants: { include: { user: true } } },
+const getEventParticipants = async (eventId: string, userId: string) => {
+  const host = await prisma.host.findUnique({
+    where: { userId },
+  });
+
+  if (!host) {
+    throw new Error("Host not found for this user");
+  }
+
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
+
+  if (!event || event.hostId !== host.id) {
+    throw new Error(
+      "Event not found or you are not authorized to view participants",
+    );
+  }
+  return prisma.eventParticipant.findMany({
+    where: { eventId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          host: {
+            select: {
+              fullName: true,
+              profilePhoto: true,
+            },
+          },
+        },
+      },
+    },
   });
 };
 
