@@ -27,7 +27,7 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const registerHost = catchAsync(async (req: Request, res: Response) => {
+const createHost = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createHost(req.body);
   sendResponse(res, {
     statusCode: 201,
@@ -117,7 +117,7 @@ const updateMyProfile = catchAsync(
 export const userController = {
   createAdmin,
   registerUser,
-  registerHost,
+  createHost,
   getAllFromDB,
   changeProfileStatus,
   getMyProfile,

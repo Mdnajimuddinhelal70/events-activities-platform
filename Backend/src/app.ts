@@ -20,7 +20,7 @@ app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send({
-    Message: "Ph health care server..",
+    Message: "Event Activities server..",
   });
 });
 app.use("/api/v1", router);

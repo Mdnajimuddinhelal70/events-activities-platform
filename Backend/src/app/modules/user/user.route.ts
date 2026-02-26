@@ -14,7 +14,7 @@ router.get(
 
 router.post("/create-admin", userController.createAdmin);
 router.post("/create-user", userController.registerUser);
-router.post("/create-host", userController.registerHost);
+router.post("/create-host", userController.createHost);
 
 router.patch("/:id/status", userController.changeProfileStatus);
 router.patch("/update-my-profile", userController.updateMyProfile);
