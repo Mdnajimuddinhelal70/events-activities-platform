@@ -1,22 +1,39 @@
-import z, { email } from "zod";
+import z from "zod";
 
-const createAdmin = z.object({
-  password: z.string({
-    error: "Password is required",
+const createUserSchema = z.object({
+  body: z.object({
+    email: z.string().email("Valid email is required"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    role: z.enum(["USER", "HOST", "ADMIN"]).optional(),
+    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+    needPasswordChange: z.boolean().optional(),
   }),
-  admin: z.object({
-    name: z.string({
-      error: "Admin name is required",
-    }),
-    email: email({
-      error: "Admin email is required",
-    }),
-    contactNo: z.string({
-      error: "Admin contact number is required",
-    }),
+});
+
+const createHostSchema = z.object({
+  body: z.object({
+    fullName: z.string({ error: "Full name is required" }),
+    profilePhoto: z.string().url().optional(),
+    contactNumber: z.string().optional(),
+    bio: z.string().optional(),
+    location: z.string().optional(),
+    interests: z.array(z.string()).optional(),
+    userId: z.string({ error: "User ID is required" }),
+  }),
+});
+
+const createAdminSchema = z.object({
+  body: z.object({
+    fullName: z.string({ error: "Full name is required" }),
+    profilePhoto: z.string().url().optional(),
+    contactNumber: z.string().optional(),
+    isDeleted: z.boolean().optional(),
+    userId: z.string({ error: "User ID is required" }),
   }),
 });
 
 export const userValidation = {
-  createAdmin,
+  createUser: createUserSchema,
+  createHost: createHostSchema,
+  createAdmin: createAdminSchema,
 };
