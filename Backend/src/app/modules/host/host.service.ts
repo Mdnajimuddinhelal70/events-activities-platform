@@ -2,10 +2,7 @@ import { EventStatus } from "../../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
 
 const createEvent = async (userId: string, data: any) => {
-  const host = await prisma.host.findUnique({
-    where: { userId },
-  });
-
+  const host = await prisma.host.findUnique({ where: { userId } });
   if (!host) {
     throw new Error("Host not found for this user");
   }
@@ -16,7 +13,7 @@ const createEvent = async (userId: string, data: any) => {
       type: data.type,
       description: data.description,
       location: data.location,
-      image: data.image,
+      image: data.imageUrl,
       eventDate: data.eventDate,
       joiningFee: data.joiningFee || 0,
       minParticipants: data.minParticipants,

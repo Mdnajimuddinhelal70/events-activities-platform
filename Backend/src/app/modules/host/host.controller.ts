@@ -6,7 +6,7 @@ import { HostService } from "./host.service";
 
 const createEvent = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
-    const userId = req.user?.id; // JWT থেকে আসা User এর id
+    const userId = req.user?.id;
     const result = await HostService.createEvent(userId, req.body);
 
     sendResponse(res, {
