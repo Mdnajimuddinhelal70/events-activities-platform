@@ -2,40 +2,45 @@ import bcrypt from "bcrypt";
 import { Request } from "express";
 import httpStatus from "http-status";
 import {
-  Admin,
   Host,
   User,
   UserRole,
   UserStatus,
 } from "../../../../generated/prisma/client";
 import config from "../../../config";
+import { fileUploader } from "../../../helpers/fileUploader";
 import { prisma } from "../../../lib/prisma";
 import { SafeUser } from "../../../types/user";
 import ApiError from "../../errors/ApiError";
 import { IAuthUser } from "../../interfaces/common";
 
-const createAdmin = async (payload: any): Promise<Admin> => {
+const createAdmin = async (req: Request) => {
+  const file = req.file;
+
+  if (file) {
+    const uploadResult = await fileUploader.uploadToCloudinary(file);
+    req.body.admin.profilePhoto = uploadResult?.secure_url;
+  }
+
   const hashedPassword: string = await bcrypt.hash(
-    payload.password,
+    req.body.password,
     Number(config.salt_round),
   );
 
   const userData = {
-    email: payload.email,
+    email: req.body.email,
     password: hashedPassword,
     role: UserRole.ADMIN,
   };
 
   const result = await prisma.$transaction(async (tnx) => {
-    // ✅ create user first
     const createdUser = await tnx.user.create({
       data: userData,
     });
 
-    // ✅ attach userId to admin
     const createdAdminData = await tnx.admin.create({
       data: {
-        ...payload.admin,
+        ...req.body.admin,
         userId: createdUser.id,
       },
     });

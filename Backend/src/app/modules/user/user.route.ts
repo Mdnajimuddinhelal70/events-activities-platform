@@ -1,5 +1,6 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { UserRole } from "../../../../generated/prisma/client";
+import { fileUploader } from "../../../helpers/fileUploader";
 import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { userController } from "./user.controller";
@@ -16,9 +17,14 @@ router.get(
 
 router.post(
   "/create-admin",
-  validateRequest(userValidation.createAdmin),
-  userController.createAdmin,
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    const parsedData = JSON.parse(req.body.data);
+    req.body = userValidation.createAdmin.parse({ body: parsedData }).body;
+    return userController.createAdmin(req, res, next);
+  },
 );
+
 router.post(
   "/create-user",
   validateRequest(userValidation.createUser),

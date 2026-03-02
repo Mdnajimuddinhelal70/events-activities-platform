@@ -8,7 +8,7 @@ import { IAuthUser } from "../../interfaces/common";
 import { userService } from "./user.service";
 
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.createAdmin(req.body);
+  const result = await userService.createAdmin(req);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

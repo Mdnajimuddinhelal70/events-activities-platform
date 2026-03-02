@@ -24,11 +24,14 @@ const createHostSchema = z.object({
 
 const createAdminSchema = z.object({
   body: z.object({
-    fullName: z.string({ error: "Full name is required" }),
-    profilePhoto: z.string().url().optional(),
-    contactNumber: z.string().optional(),
-    isDeleted: z.boolean().optional(),
-    userId: z.string({ error: "User ID is required" }),
+    email: z.string().email({ message: "Valid email is required" }),
+    password: z.string({ message: "Password is required" }),
+    admin: z.object({
+      fullName: z.string({ message: "Full name is required" }),
+      profilePhoto: z.string().url().optional(),
+      contactNumber: z.string().optional(),
+      isDeleted: z.boolean().optional(),
+    }),
   }),
 });
 
