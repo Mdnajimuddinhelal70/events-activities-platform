@@ -26,7 +26,6 @@ const createEvent = async (userId: string, data: any) => {
 
 // Update Event
 const updateEvent = async (eventId: string, userId: string, data: any) => {
-  // প্রথমে Host বের করো User এর সাথে লিঙ্ক করে
   const host = await prisma.host.findUnique({
     where: { userId },
   });
@@ -35,7 +34,6 @@ const updateEvent = async (eventId: string, userId: string, data: any) => {
     throw new Error("Host not found for this user");
   }
 
-  // Event খুঁজে বের করো
   const event = await prisma.event.findUnique({
     where: { id: eventId },
   });

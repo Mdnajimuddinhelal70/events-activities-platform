@@ -1,33 +1,37 @@
-import z from "zod";
+import { z } from "zod";
 
 const createUserSchema = z.object({
   body: z.object({
     email: z.string().email("Valid email is required"),
     password: z.string().min(6, "Password must be at least 6 characters"),
-    role: z.enum(["USER", "HOST", "ADMIN"]).optional(),
-    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
-    needPasswordChange: z.boolean().optional(),
+    user: z.object({
+      fullName: z.string().min(1, "Full name is required"),
+      profilePhoto: z.string().url().optional(),
+      contactNumber: z.string().optional(),
+      isDeleted: z.boolean().optional(),
+    }),
   }),
 });
 
 const createHostSchema = z.object({
   body: z.object({
-    fullName: z.string({ error: "Full name is required" }),
-    profilePhoto: z.string().url().optional(),
-    contactNumber: z.string().optional(),
-    bio: z.string().optional(),
-    location: z.string().optional(),
-    interests: z.array(z.string()).optional(),
-    userId: z.string({ error: "User ID is required" }),
+    email: z.string().email("Valid email is required"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    host: z.object({
+      fullName: z.string().min(1, "Full name is required"),
+      profilePhoto: z.string().url().optional(),
+      contactNumber: z.string().optional(),
+      isDeleted: z.boolean().optional(),
+    }),
   }),
 });
 
 const createAdminSchema = z.object({
   body: z.object({
-    email: z.string().email({ message: "Valid email is required" }),
-    password: z.string({ message: "Password is required" }),
+    email: z.string().email("Valid email is required"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
     admin: z.object({
-      fullName: z.string({ message: "Full name is required" }),
+      fullName: z.string().min(1, "Full name is required"),
       profilePhoto: z.string().url().optional(),
       contactNumber: z.string().optional(),
       isDeleted: z.boolean().optional(),

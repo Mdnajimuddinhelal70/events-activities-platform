@@ -17,18 +17,19 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const registerUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.createUser(req.body);
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createUser(req);
+
   sendResponse(res, {
-    statusCode: 201,
+    statusCode: httpStatus.OK,
     success: true,
-    message: "User registered successfully",
+    message: "User Created successfully!",
     data: result,
   });
 });
 
 const createHost = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.createHost(req.body);
+  const result = await userService.createHost(req);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -38,12 +39,24 @@ const createHost = catchAsync(async (req: Request, res: Response) => {
 });
 
 // 1️⃣ Get all users
+// const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+//   const result = await userService.getAllFromDB();
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: "All users fetched successfully",
+//     data: result,
+//   });
+// });
+
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.getAllFromDB();
+  const role = req.query.role as string;
+  const result = await userService.getAllFromDB(role);
+
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: httpStatus.OK,
     success: true,
-    message: "All users fetched successfully",
+    message: "Data retrieved successfully!",
     data: result,
   });
 });
@@ -61,29 +74,44 @@ const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 // 3️⃣ Get My Profile
-const getMyProfile = catchAsync(
-  async (req: Request & { user?: any }, res: Response) => {
-    const user = req.user;
+// const getMyProfile = catchAsync(
+//   async (req: Request & { user?: any }, res: Response) => {
+//     const user = req.user;
 
-    if (!user || !user.id) {
-      return sendResponse(res, {
-        statusCode: httpStatus.UNAUTHORIZED,
-        success: false,
-        message: "User not authenticated",
-        data: null,
-      });
-    }
+//     if (!user || !user.id) {
+//       return sendResponse(res, {
+//         statusCode: httpStatus.UNAUTHORIZED,
+//         success: false,
+//         message: "User not authenticated",
+//         data: null,
+//       });
+//     }
 
-    const result = await userService.getMyProfile(user.id);
+//     const result = await userService.getMyProfile(user.id);
 
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Profile fetched successfully",
-      data: result,
-    });
-  },
-);
+//     sendResponse(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: "Profile fetched successfully",
+//       data: result,
+//     });
+//   },
+// );
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "User not authenticated");
+  }
+  const userId = req.user.id;
+  const result = await userService.getMyProfile(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile retrieved successfully!",
+    data: result,
+  });
+});
+
 // 4️⃣ Update My Profile
 // const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
 //   const userId = req.user!.id;
@@ -116,7 +144,7 @@ const updateMyProfile = catchAsync(
 
 export const userController = {
   createAdmin,
-  registerUser,
+  createUser,
   createHost,
   getAllFromDB,
   changeProfileStatus,

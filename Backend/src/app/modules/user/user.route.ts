@@ -1,14 +1,13 @@
 import express, { NextFunction, Request, Response } from "express";
-import { UserRole } from "../../../../generated/prisma/client";
+import { UserRole } from "../../../../generated/prisma/enums";
 import { fileUploader } from "../../../helpers/fileUploader";
 import auth from "../../middlewares/auth";
-import validateRequest from "../../middlewares/validateRequest";
 import { userController } from "./user.controller";
 import { userValidation } from "./user.validation";
 
 const router = express.Router();
 
-router.get("/", userController.getAllFromDB);
+router.get("/get-all", userController.getAllFromDB);
 router.get(
   "/me",
   auth(UserRole.ADMIN, UserRole.HOST, UserRole.USER),
@@ -27,13 +26,21 @@ router.post(
 
 router.post(
   "/create-user",
-  validateRequest(userValidation.createUser),
-  userController.registerUser,
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    const parsedData = JSON.parse(req.body.data);
+    req.body = userValidation.createUser.parse({ body: parsedData }).body;
+    return userController.createUser(req, res, next);
+  },
 );
 router.post(
   "/create-host",
-  validateRequest(userValidation.createHost),
-  userController.createHost,
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    const parsedData = JSON.parse(req.body.data);
+    req.body = userValidation.createHost.parse({ body: parsedData }).body;
+    return userController.createHost(req, res, next);
+  },
 );
 
 router.patch("/:id/status", userController.changeProfileStatus);

@@ -1,10 +1,11 @@
 model Profile {
-    id           String   @id @default(uuid())
-    fullName     String
-    profilePhoto String?
-    bio          String?
-    interests    String[]
-    location     String?
+    id            String   @id @default(uuid())
+    fullName      String
+    profilePhoto  String?
+    contactNumber String?
+    bio           String?
+    interests     String[]
+    location      String?
 
     userId String @unique
     user   User   @relation(fields: [userId], references: [id])
