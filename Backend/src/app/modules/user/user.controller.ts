@@ -127,6 +127,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 
 const updateMyProfile = catchAsync(
   async (req: Request & { user?: IAuthUser }, res: Response) => {
+    console.log("Decoded user:", req.user);
     if (!req.user) {
       throw new ApiError(httpStatus.UNAUTHORIZED, "User not found");
     }

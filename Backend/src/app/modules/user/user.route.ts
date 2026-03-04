@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { UserRole } from "../../../../generated/prisma/enums";
 import { fileUploader } from "../../../helpers/fileUploader";
 import auth from "../../middlewares/auth";
+import validateRequest from "../../middlewares/validateRequest";
 import { userController } from "./user.controller";
 import { userValidation } from "./user.validation";
 
@@ -44,6 +45,11 @@ router.post(
 );
 
 router.patch("/:id/status", userController.changeProfileStatus);
-router.patch("/update-my-profile", userController.updateMyProfile);
+router.patch(
+  "/update-my-profile",
+  validateRequest(userValidation.updateProfile),
+  auth(UserRole.ADMIN, UserRole.HOST, UserRole.USER),
+  userController.updateMyProfile,
+);
 
 export const UserRoute = router;

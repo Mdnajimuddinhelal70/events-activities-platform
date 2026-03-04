@@ -14,7 +14,8 @@ const auth = (...roles: string[]) => {
     next: NextFunction,
   ) => {
     try {
-      const token = req.headers.authorization || req.cookies.accessToken;
+      const token =
+        req.headers.authorization?.split(" ")?.[1] || req.cookies.accessToken;
       console.log({ token }, "from auth guard");
 
       if (!token) {

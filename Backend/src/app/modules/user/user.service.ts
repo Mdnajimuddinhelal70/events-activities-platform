@@ -183,12 +183,13 @@ const getMyProfile = async (userId: string) => {
 const updateMyProfile = async (user: IAuthUser, req: Request) => {
   const userInfo = await prisma.user.findFirstOrThrow({
     where: {
-      email: user!.email,
+      id: user!.id,
       status: UserStatus.ACTIVE,
     },
     include: {
       admin: true,
       host: true,
+      profile: true,
     },
   });
 
@@ -205,8 +206,8 @@ const updateMyProfile = async (user: IAuthUser, req: Request) => {
       data: req.body,
     });
   } else if (userInfo.role === UserRole.USER) {
-    profileInfo = await prisma.user.update({
-      where: { id: userInfo.id },
+    profileInfo = await prisma.profile.update({
+      where: { userId: userInfo.id },
       data: req.body,
     });
   }
