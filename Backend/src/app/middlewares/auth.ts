@@ -16,7 +16,7 @@ const auth = (...roles: string[]) => {
     try {
       const token =
         req.headers.authorization?.split(" ")?.[1] || req.cookies.accessToken;
-      console.log({ token }, "from auth guard");
+      // console.log({ token }, "from auth guard");
 
       if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");

@@ -1,5 +1,9 @@
+import { isAfter, parseISO } from "date-fns";
+
+import httpStatus from "http-status";
 import { EventStatus } from "../../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
+import ApiError from "../../errors/ApiError";
 
 const createEvent = async (userId: string, data: any) => {
   const host = await prisma.host.findUnique({ where: { userId } });
@@ -7,14 +11,37 @@ const createEvent = async (userId: string, data: any) => {
     throw new Error("Host not found for this user");
   }
 
+  const eventDate = parseISO(data.eventDate);
+
+  if (
+    !isAfter(eventDate, new Date()) &&
+    eventDate.toDateString() !== new Date().toDateString()
+  ) {
+    throw new Error("Event date must be today or in the future");
+  }
+
+  const existingEvent = await prisma.event.findFirst({
+    where: {
+      title: data.title,
+      eventDate,
+      location: data.location,
+      hostId: host.id,
+    },
+  });
+  if (existingEvent) {
+    throw new ApiError(
+      httpStatus.CONFLICT,
+      "An event with the same title, date, location and host already exists",
+    );
+  }
   return prisma.event.create({
     data: {
       title: data.title,
       type: data.type,
       description: data.description,
       location: data.location,
-      image: data.imageUrl,
-      eventDate: data.eventDate,
+      image: data.image,
+      eventDate,
       joiningFee: data.joiningFee || 0,
       minParticipants: data.minParticipants,
       maxParticipants: data.maxParticipants,
@@ -93,7 +120,7 @@ const getEventParticipants = async (eventId: string, userId: string) => {
   });
 
   if (!host) {
-    throw new Error("Host not found for this user");
+    throw new ApiError(httpStatus.NOT_FOUND, "Host not found for this user");
   }
 
   const event = await prisma.event.findUnique({

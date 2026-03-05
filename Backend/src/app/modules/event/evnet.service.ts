@@ -6,6 +6,7 @@ import { paginationHelper } from "../../../helpers/paginationHelper";
 import ApiError from "../../errors/ApiError";
 import { eventSearchableFields } from "./event.constants";
 
+// Get all events with pagination, filtering and sorting
 const getAllEvents = async (filters: any, options: any) => {
   const { limit, page, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = filters;
@@ -52,6 +53,7 @@ const getAllEvents = async (filters: any, options: any) => {
   };
 };
 
+// User can join an event by providing eventId. User must be authenticated to join an event
 const joinEvent = async (userId: string, eventId: string) => {
   const event = await prisma.event.findUnique({ where: { id: eventId } });
   if (!event) {
@@ -78,7 +80,24 @@ const joinEvent = async (userId: string, eventId: string) => {
   return participant;
 };
 
+// User will get all events they have joined, along with event details and host info
+const getMyEvents = async (userId: string) => {
+  const result = await prisma.eventParticipant.findMany({
+    where: { userId },
+    include: {
+      event: {
+        include: {
+          host: true,
+        },
+      },
+    },
+  });
+
+  return result.map((participant) => participant.event);
+};
+
 export const eventService = {
   getAllEvents,
   joinEvent,
+  getMyEvents,
 };

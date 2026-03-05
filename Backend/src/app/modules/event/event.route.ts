@@ -13,10 +13,7 @@ router.get(
   eventController.getAllEvents,
 );
 
-router.post(
-  "/join",
-  auth(UserRole.USER, UserRole.HOST, UserRole.ADMIN),
-  eventController.joinEvent,
-);
+router.post("/join", auth(UserRole.USER), eventController.joinEvent);
+router.get("/my-events", auth(UserRole.USER), eventController.getMyEvents);
 
 export const eventRoute = router;
