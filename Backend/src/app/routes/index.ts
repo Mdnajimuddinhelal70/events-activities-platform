@@ -24,7 +24,7 @@ const moduleRoutes = [
     route: eventRoute,
   },
   {
-    path: "/events",
+    path: "/host",
     route: hostRoute,
   },
   {

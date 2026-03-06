@@ -40,13 +40,13 @@ const joinEvent = catchAsync(
 );
 
 // User will get all events they have joined, along with event details and host info
-const getMyEvents = catchAsync(
+const getUserEvents = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     if (!req.user) {
       throw new ApiError(httpStatus.UNAUTHORIZED, "User not found");
     }
 
-    const result = await eventService.getMyEvents(req.user.id);
+    const result = await eventService.getUserEvents(req.user.id);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -60,5 +60,5 @@ const getMyEvents = catchAsync(
 export const eventController = {
   getAllEvents,
   joinEvent,
-  getMyEvents,
+  getUserEvents,
 };

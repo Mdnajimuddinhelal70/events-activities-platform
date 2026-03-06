@@ -14,6 +14,6 @@ router.get(
 );
 
 router.post("/join", auth(UserRole.USER), eventController.joinEvent);
-router.get("/my-events", auth(UserRole.USER), eventController.getMyEvents);
+router.get("/my-events", auth(UserRole.USER), eventController.getUserEvents);
 
 export const eventRoute = router;

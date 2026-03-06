@@ -117,20 +117,6 @@ const createHost = async (req: Request) => {
   return hostUser;
 };
 
-// const getAllFromDB = async (): Promise<IAuthUser[]> => {
-//   return prisma.user.findMany({
-//     where: { role: UserRole.USER },
-//     select: {
-//       id: true,
-//       email: true,
-//       role: true,
-//       status: true,
-//       createdAt: true,
-//       updatedAt: true,
-//     },
-//   });
-// };
-
 const getAllFromDB = async (role?: string) => {
   if (role === UserRole.ADMIN) {
     return await prisma.admin.findMany({

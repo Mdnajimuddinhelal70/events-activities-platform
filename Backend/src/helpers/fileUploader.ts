@@ -34,10 +34,17 @@ async function uploadToCloudinary(file: Express.Multer.File) {
 
   return uploadResult;
 }
+async function deleteFromCloudinary(imageUrl: string) {
+  const publicId = imageUrl.split("/").pop()?.split(".")[0];
+  if (publicId) {
+    return cloudinary.uploader.destroy(publicId);
+  }
+}
 
 const upload = multer({ storage: storage });
 
 export const fileUploader = {
   upload,
   uploadToCloudinary,
+  deleteFromCloudinary,
 };

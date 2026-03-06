@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { prisma } from "../../../lib/prisma";
 
 import httpStatus from "http-status";
@@ -81,7 +82,8 @@ const joinEvent = async (userId: string, eventId: string) => {
 };
 
 // User will get all events they have joined, along with event details and host info
-const getMyEvents = async (userId: string) => {
+
+const getUserEvents = async (userId: string) => {
   const result = await prisma.eventParticipant.findMany({
     where: { userId },
     include: {
@@ -93,11 +95,19 @@ const getMyEvents = async (userId: string) => {
     },
   });
 
-  return result.map((participant) => participant.event);
+  return result.map((participant) => {
+    const event = participant.event;
+    const formattedDate = format(event.eventDate, "yyyy-MM-dd");
+
+    return {
+      ...event,
+      eventDate: formattedDate,
+    };
+  });
 };
 
 export const eventService = {
   getAllEvents,
   joinEvent,
-  getMyEvents,
+  getUserEvents,
 };

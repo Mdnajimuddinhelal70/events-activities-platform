@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { fileUploader } from "../../../helpers/fileUploader";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { HostService } from "./host.service";
@@ -7,6 +8,12 @@ import { HostService } from "./host.service";
 const createEvent = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const userId = req.user?.id;
+
+    if (req.file) {
+      const uploadResult = await fileUploader.uploadToCloudinary(req.file);
+      req.body.image = uploadResult?.secure_url;
+    }
+
     const result = await HostService.createEvent(userId, req.body);
 
     sendResponse(res, {
@@ -17,11 +24,15 @@ const createEvent = catchAsync(
     });
   },
 );
-
 const updateEvent = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const userId = req.user?.id;
     const { id } = req.params;
+
+    if (req.file) {
+      const uploadResult = await fileUploader.uploadToCloudinary(req.file);
+      req.body.image = uploadResult?.secure_url;
+    }
     const result = await HostService.updateEvent(
       id as string,
       userId,

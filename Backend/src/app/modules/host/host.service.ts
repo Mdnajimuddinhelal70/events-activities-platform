@@ -1,7 +1,8 @@
-import { isAfter, parseISO } from "date-fns";
+import { isAfter } from "date-fns";
 
 import httpStatus from "http-status";
 import { EventStatus } from "../../../../generated/prisma/enums";
+import { fileUploader } from "../../../helpers/fileUploader";
 import { prisma } from "../../../lib/prisma";
 import ApiError from "../../errors/ApiError";
 
@@ -11,7 +12,8 @@ const createEvent = async (userId: string, data: any) => {
     throw new Error("Host not found for this user");
   }
 
-  const eventDate = parseISO(data.eventDate);
+  // const eventDate = parseISO(data.eventDate);
+  const eventDate = data.eventDate;
 
   if (
     !isAfter(eventDate, new Date()) &&
@@ -52,6 +54,7 @@ const createEvent = async (userId: string, data: any) => {
 };
 
 // Update Event
+
 const updateEvent = async (eventId: string, userId: string, data: any) => {
   const host = await prisma.host.findUnique({
     where: { userId },
@@ -69,6 +72,11 @@ const updateEvent = async (eventId: string, userId: string, data: any) => {
     throw new Error("Event not found or you are not authorized to update");
   }
 
+  // old image delete
+  if (data.image && event.image) {
+    await fileUploader.deleteFromCloudinary(event.image);
+  }
+
   return prisma.event.update({
     where: { id: eventId },
     data: {
@@ -76,7 +84,6 @@ const updateEvent = async (eventId: string, userId: string, data: any) => {
     },
   });
 };
-
 // Delete Event
 const deleteEvent = async (eventId: string, userId: string) => {
   const host = await prisma.host.findUnique({
