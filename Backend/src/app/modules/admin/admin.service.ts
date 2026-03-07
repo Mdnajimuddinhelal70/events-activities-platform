@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { UserStatus } from "../../../../generated/prisma/enums";
+import { EventStatus, UserStatus } from "../../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
 import ApiError from "../../errors/ApiError";
 
@@ -39,7 +39,46 @@ const updateUserStatus = async (id: string, status: UserStatus) => {
   });
 };
 
+const getAllEvents = async () => {
+  const events = await prisma.event.findMany({
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      hostId: true,
+    },
+  });
+  return events;
+};
+
+const updateEventStatus = async (id: string, status: EventStatus) => {
+  const event = await prisma.event.findUnique({
+    where: { id },
+  });
+  if (!event) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
+  }
+
+  return prisma.event.update({
+    where: { id },
+    data: { status },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      hostId: true,
+    },
+  });
+};
 export const AdminService = {
   getAllUsers,
   updateUserStatus,
+  getAllEvents,
+  updateEventStatus,
 };

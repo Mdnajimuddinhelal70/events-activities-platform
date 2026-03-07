@@ -27,7 +27,32 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const getAllEvents = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.getAllEvents();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All events retrieved successfully",
+    data: result,
+  });
+});
+
+const updateEventStatus = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const { status } = req.body;
+  const result = await AdminService.updateEventStatus(id, status);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Event status updated successfully",
+    data: result,
+  });
+});
+
 export const AdminController = {
   getAllUsers,
   updateUserStatus,
+  getAllEvents,
+  updateEventStatus,
 };
