@@ -99,10 +99,69 @@ const deleteEvent = async (id: string) => {
     },
   });
 };
+
+const getAllHosts = async () => {
+  return prisma.host.findMany({
+    select: {
+      id: true,
+      fullName: true,
+      profilePhoto: true,
+      location: true,
+      interests: true,
+      contactNumber: true,
+      createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          email: true,
+          status: true,
+        },
+      },
+    },
+  });
+};
+
+const updateHostStatus = async (id: string, status: UserStatus) => {
+  const host = await prisma.host.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Host not found");
+  }
+
+  await prisma.user.update({
+    where: { id: host.userId },
+    data: { status },
+  });
+
+  return prisma.host.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      fullName: true,
+      profilePhoto: true,
+      location: true,
+      interests: true,
+      contactNumber: true,
+      createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          email: true,
+          status: true,
+        },
+      },
+    },
+  });
+};
+
 export const AdminService = {
   getAllUsers,
   updateUserStatus,
   getAllEvents,
   updateEventStatus,
   deleteEvent,
+  getAllHosts,
+  updateHostStatus,
 };

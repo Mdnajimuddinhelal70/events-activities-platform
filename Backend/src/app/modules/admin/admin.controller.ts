@@ -60,10 +60,36 @@ const deleteEvent = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const getAllHosts = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.getAllHosts();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All hosts retrieved successfully",
+    data: result,
+  });
+});
+
+const updateHostStatus = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const { status } = req.body;
+  const result = await AdminService.updateHostStatus(id, status);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Host status updated successfully",
+    data: result,
+  });
+});
+
 export const AdminController = {
   getAllUsers,
   updateUserStatus,
   getAllEvents,
   updateEventStatus,
   deleteEvent,
+  getAllHosts,
+  updateHostStatus,
 };
