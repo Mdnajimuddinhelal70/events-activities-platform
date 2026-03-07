@@ -18,4 +18,6 @@ router.patch(
   AdminController.updateEventStatus,
 );
 
+router.delete("/events/:id", auth(UserRole.ADMIN), AdminController.deleteEvent);
+
 export const AdminRoute = router;

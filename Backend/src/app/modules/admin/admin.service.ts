@@ -76,9 +76,33 @@ const updateEventStatus = async (id: string, status: EventStatus) => {
     },
   });
 };
+
+const deleteEvent = async (id: string) => {
+  const event = await prisma.event.findUnique({
+    where: { id },
+  });
+
+  if (!event) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
+  }
+
+  await prisma.review.deleteMany({
+    where: { eventId: id },
+  });
+
+  return prisma.event.delete({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+    },
+  });
+};
 export const AdminService = {
   getAllUsers,
   updateUserStatus,
   getAllEvents,
   updateEventStatus,
+  deleteEvent,
 };

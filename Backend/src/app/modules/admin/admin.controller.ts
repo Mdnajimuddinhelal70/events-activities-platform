@@ -50,9 +50,20 @@ const updateEventStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteEvent = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const result = await AdminService.deleteEvent(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Event deleted successfully",
+    data: result,
+  });
+});
 export const AdminController = {
   getAllUsers,
   updateUserStatus,
   getAllEvents,
   updateEventStatus,
+  deleteEvent,
 };
