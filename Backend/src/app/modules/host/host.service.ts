@@ -11,8 +11,6 @@ const createEvent = async (userId: string, data: any) => {
   if (!host) {
     throw new Error("Host not found for this user");
   }
-
-  // const eventDate = parseISO(data.eventDate);
   const eventDate = data.eventDate;
 
   if (

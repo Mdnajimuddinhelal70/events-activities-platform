@@ -1,5 +1,6 @@
 import express from "express";
 import { apiLimiter } from "../middlewares/rateLimiter";
+import { AdminRoute } from "../modules/admin/admin.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { eventRoute } from "../modules/event/event.route";
 import hostRoute from "../modules/host/host.route";
@@ -30,6 +31,10 @@ const moduleRoutes = [
   {
     path: "/reviews",
     route: ReviewRoute,
+  },
+  {
+    path: "/admin",
+    route: AdminRoute,
   },
 ];
 
