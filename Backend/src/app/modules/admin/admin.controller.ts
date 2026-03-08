@@ -1,16 +1,20 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
+import pick from "../../../shared/pick";
 import sendResponse from "../../../shared/sendResponse";
 import { AdminService } from "./admin.service";
+import { userFilterableFields } from "./userFilterableFields";
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const result = await AdminService.getAllUsers();
+  const filters = pick(req.query, userFilterableFields);
+  const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+  const result = await AdminService.getAllUsers(filters, options);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "All users retrieved successfully",
+    message: "Users fetched successfully",
     data: result,
   });
 });

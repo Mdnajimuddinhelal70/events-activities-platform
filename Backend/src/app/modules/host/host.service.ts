@@ -52,7 +52,6 @@ const createEvent = async (userId: string, data: any) => {
 };
 
 // Update Event
-
 const updateEvent = async (eventId: string, userId: string, data: any) => {
   const host = await prisma.host.findUnique({
     where: { userId },
