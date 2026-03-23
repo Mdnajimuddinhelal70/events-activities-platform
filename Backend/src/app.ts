@@ -4,9 +4,16 @@ import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import httpStatus from "http-status";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler.js";
+import { PaymentController } from "./app/modules/payment/payment.controller.js";
 import router from "./app/routes/index.js";
 const app: Application = express();
 app.use(cookieParser());
+
+app.post(
+  "/api/v1/payment/webhook",
+  express.raw({ type: "application/json" }),
+  PaymentController.handleStripeWebhook,
+);
 
 app.use(
   cors({

@@ -2,11 +2,11 @@ model EventParticipant {
     id      String                 @id @default(uuid())
     userId  String
     eventId String
-    status  EventParticipantStatus @default(JOINED)
+    status  EventParticipantStatus @default(PENDING)
 
-    user    User     @relation(fields: [userId], references: [id])
-    event   Event    @relation(fields: [eventId], references: [id])
-    payment Payment?
+    user     User      @relation(fields: [userId], references: [id])
+    event    Event     @relation(fields: [eventId], references: [id])
+    payments Payment[]
 
     joinedAt DateTime @default(now())
 

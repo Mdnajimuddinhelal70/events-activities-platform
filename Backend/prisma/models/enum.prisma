@@ -19,7 +19,7 @@ enum EventStatus {
 
 enum PaymentStatus {
     PENDING
-    PAID
+    SUCCESS
     FAILED
 }
 
@@ -33,7 +33,7 @@ enum EventType {
 }
 
 enum EventParticipantStatus {
-    JOINED
+    PENDING
+    CONFIRMED
     CANCELLED
-    WAITING
 }

@@ -55,8 +55,37 @@ const getAllEvents = async (filters: any, options: any) => {
 };
 
 // User can join an event by providing eventId. User must be authenticated to join an event
+// const joinEvent = async (userId: string, eventId: string) => {
+//   const event = await prisma.event.findUnique({ where: { id: eventId } });
+//   if (!event) {
+//     throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
+//   }
+
+//   const existing = await prisma.eventParticipant.findUnique({
+//     where: {
+//       userId_eventId: { userId, eventId },
+//     },
+//   });
+//   if (existing) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, "Already joined this event");
+//   }
+
+//   const participant = await prisma.eventParticipant.create({
+//     data: {
+//       userId,
+//       eventId,
+//       status: EventParticipantStatus.PENDING,
+//     },
+//   });
+
+//   return participant;
+// };
+
 const joinEvent = async (userId: string, eventId: string) => {
-  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
+
   if (!event) {
     throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
   }
@@ -66,21 +95,40 @@ const joinEvent = async (userId: string, eventId: string) => {
       userId_eventId: { userId, eventId },
     },
   });
+
   if (existing) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Already joined this event");
   }
 
+  if (event.joiningFee === 0) {
+    const participant = await prisma.eventParticipant.create({
+      data: {
+        userId,
+        eventId,
+        status: EventParticipantStatus.CONFIRMED,
+      },
+    });
+
+    return {
+      type: "FREE",
+      participant,
+    };
+  }
+
+  // 🔥 PAID EVENT
   const participant = await prisma.eventParticipant.create({
     data: {
       userId,
       eventId,
-      status: EventParticipantStatus.JOINED,
+      status: "PENDING",
     },
   });
 
-  return participant;
+  return {
+    type: "PAID",
+    participant,
+  };
 };
-
 // User will get all events they have joined, along with event details and host info
 
 const getUserEvents = async (userId: string) => {

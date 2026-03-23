@@ -23,6 +23,22 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
 });
 
 // User can join an event by providing eventId. User must be authenticated to join an event
+// const joinEvent = catchAsync(
+//   async (req: Request & { user?: any }, res: Response) => {
+//     const { eventId } = req.body;
+//     const userId = req.user?.id;
+
+//     const result = await eventService.joinEvent(userId, eventId);
+
+//     sendResponse(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: "Event joined successfully",
+//       data: result,
+//     });
+//   },
+// );
+
 const joinEvent = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const { eventId } = req.body;
@@ -30,11 +46,22 @@ const joinEvent = catchAsync(
 
     const result = await eventService.joinEvent(userId, eventId);
 
-    sendResponse(res, {
+    // 🧠 FREE EVENT
+    if (result.type === "FREE") {
+      return sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Joined successfully (Free Event)",
+        data: result.participant,
+      });
+    }
+    return sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Event joined successfully",
-      data: result,
+      message: "Proceed to payment",
+      data: {
+        participantId: result.participant.id,
+      },
     });
   },
 );
