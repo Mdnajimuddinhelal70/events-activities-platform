@@ -1,15 +1,25 @@
 import { z } from "zod";
 
+// const createUserSchema = z.object({
+//   body: z.object({
+//     email: z.string().email("Valid email is required"),
+//     password: z.string().min(6, "Password must be at least 6 characters"),
+//     user: z.object({
+//       fullName: z.string().min(1, "Full name is required"),
+//       profilePhoto: z.string().url().optional(),
+//       contactNumber: z.string().optional(),
+//       isDeleted: z.boolean().optional(),
+//     }),
+//   }),
+// });
+
 const createUserSchema = z.object({
-  body: z.object({
-    email: z.string().email("Valid email is required"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    user: z.object({
-      fullName: z.string().min(1, "Full name is required"),
-      profilePhoto: z.string().url().optional(),
-      contactNumber: z.string().optional(),
-      isDeleted: z.boolean().optional(),
-    }),
+  email: z.string().email("Valid email is required"),
+  password: z.string().min(6),
+  user: z.object({
+    fullName: z.string().min(1, "Full name is required"),
+    profilePhoto: z.any().optional(),
+    contactNumber: z.string().optional(),
   }),
 });
 

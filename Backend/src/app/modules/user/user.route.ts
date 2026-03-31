@@ -30,7 +30,7 @@ router.post(
   fileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     const parsedData = JSON.parse(req.body.data);
-    req.body = userValidation.createUser.parse({ body: parsedData }).body;
+    req.body = userValidation.createUser.parse(parsedData);
     return userController.createUser(req, res, next);
   },
 );
