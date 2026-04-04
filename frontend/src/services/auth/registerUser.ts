@@ -58,12 +58,6 @@ export const registerUser = async (_: any, formData: FormData) => {
 
     newFormData.append("data", JSON.stringify(dataToSend));
 
-    // optional file
-    // const file = formData.get("profilePhoto");
-    // if (file && typeof file !== "string") {
-    //   newFormData.append("file", file);
-    // }
-
     const res = await fetch("http://localhost:5000/api/v1/user/create-user", {
       method: "POST",
       body: newFormData,
